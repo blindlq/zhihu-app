@@ -41,8 +41,8 @@
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
                         @guest
-                            <li><a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a></li>
-                            <li><a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a></li>
+                            <li><a class="nav-link" href="{{ route('login') }}">{{ __('登陆') }}</a></li>
+                            <li><a class="nav-link" href="{{ route('register') }}">{{ __('注册') }}</a></li>
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -53,7 +53,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        {{ __('退出') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -67,9 +67,24 @@
             </div>
         </nav>
 
+        <div class="container">
+            @if(session()->has('flash_notification.message'))
+                <div class="alert alert-{{ session('flash_notification.level')  }}">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&time;</button>
+
+                    {!! session('flash_notification.message') !!}
+                </div>
+            @endif
+        </div>
+        @include('vendor.flash.message')
+
+
         <main class="py-4">
             @yield('content')
         </main>
     </div>
+    <script>
+        $('#flash-overlay-modal').modal();
+    </script>
 </body>
 </html>

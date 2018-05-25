@@ -125,8 +125,14 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
+       /*'attribute-name' => [
             'rule-name' => 'custom-message',
+        ],*/
+        'email' => [
+            'unique' => '邮箱被占用'
+        ],
+        'password' => [
+            'confirmed' => '两次输出不一致'
         ],
     ],
 
