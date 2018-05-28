@@ -28,7 +28,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="body">描述</label>
-                                <script id="container" type="text/plain" name="body" ></script>
+                                <script id="container" type="text/plain" name="body"  style="height: 250px"></script>
                                 {!! old('body') !!}
                                 @if($errors->has('body'))
                                     <span class="invalid-feedback" style="display: block;">

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Question;
+use App\Models\Topic;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Requests\StoreQuestionRequest;
@@ -44,7 +45,9 @@ class QuestionController extends Controller
      */
     public function store(StoreQuestionRequest $request)
     {
-        
+
+        $topics = $this->nomalizeTopic($request->get('topics'));
+
         //
         $data = [
             'title' => $request->title,
@@ -52,8 +55,10 @@ class QuestionController extends Controller
             'user_id' => Auth::id(),
         ];
 
-
         $question = Question::create($data);
+
+        //实现多对多
+        $question->topics()->attach($topics);
 
         return redirect()->route('question.show',$question->id);
 
@@ -67,8 +72,8 @@ class QuestionController extends Controller
      */
     public function show($id)
     {
-        //
-       $question =  Question::find($id);
+        //这个with不是数据表topic而是Models/Question下的topics方法
+       $question =  Question::where('id',$id)->with('topics')->first();
 
        return view('questions.show',compact('question'));
     }
@@ -105,5 +110,19 @@ class QuestionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function nomalizeTopic(array $topics)
+    {
+       return  collect($topics)->map(function ($topic){
+            if(is_numeric($topic)){
+                Topic::findOrFail($topic)->increment('questions_count');
+                return (int) $topic;
+            }
+
+            $newTopic = Topic::create(['name'=>$topic,'questions_count'=>1]);
+
+            return $newTopic->id;
+        })->toArray();
     }
 }

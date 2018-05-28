@@ -77,7 +77,7 @@
                 </div>
             @endif
         </div>
-        @include('vendor.flash.message')
+
 
 
         <main class="py-4">
