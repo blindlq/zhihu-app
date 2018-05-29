@@ -4,15 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Topic;
 use App\Models\Question;
+use App\Repositories\QuestionRepository;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Requests\StoreQuestionRequest;
 
+/**
+ * Class QuestionController
+ * @package App\Http\Controllers
+ */
 class QuestionController extends Controller
 {
-    public function __construct()
+    protected $questionRepository;
+    /**
+     * QuestionController constructor.
+     */
+
+    public function __construct(QuestionRepository $questionRepository)
     {
         $this->middleware('auth', ['except' => ['index','show']]);
+        $this->questionRepository = $questionRepository;
     }
 
     /**
@@ -23,7 +34,7 @@ class QuestionController extends Controller
     public function index()
     {
         //
-        return '1';
+        return view('question.index');
     }
 
     /**
@@ -46,7 +57,7 @@ class QuestionController extends Controller
     public function store(StoreQuestionRequest $request)
     {
 
-        $topics = $this->nomalizeTopic($request->get('topics'));
+        $topics = $this->questionRepository->nomalizeTopic($request->get('topics'));
 
         //
         $data = [
@@ -55,7 +66,7 @@ class QuestionController extends Controller
             'user_id' => Auth::id(),
         ];
 
-        $question = Question::create($data);
+        $question =$this->questionRepository->create($data);
 
         //实现多对多
         $question->topics()->attach($topics);
@@ -73,7 +84,7 @@ class QuestionController extends Controller
     public function show($id)
     {
         //这个with不是数据表topic而是Models/Question下的topics方法
-       $question =  Question::where('id',$id)->with('topics')->first();
+       $question =  $this->questionRepository->byIdWithTopics($id);
 
        return view('questions.show',compact('question'));
     }
@@ -87,6 +98,12 @@ class QuestionController extends Controller
     public function edit($id)
     {
         //
+        $question = $this->questionRepository->byId($id);
+        if(Auth::user()->owns($question)){
+        return view('questions.edit',compact('question'));
+        }
+
+        return back();
     }
 
     /**
@@ -96,9 +113,26 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StoreQuestionRequest $request,$id)
     {
-        //
+
+        $topics = $this->questionRepository->nomalizeTopic($request->get('topics'));
+
+        $question = $this->questionRepository->byId($id);
+
+        $question->update([
+            'title' => $request->title,
+            'body'  => $request->body,
+        ]);
+
+
+        //同步
+        $question->topics()->sync($topics);
+
+        return redirect()->route('question.show',$question->id);
+
+
+
     }
 
     /**
@@ -112,17 +146,5 @@ class QuestionController extends Controller
         //
     }
 
-    private function nomalizeTopic(array $topics)
-    {
-       return  collect($topics)->map(function ($topic){
-            if(is_numeric($topic)){
-                Topic::findOrFail($topic)->increment('questions_count');
-                return (int) $topic;
-            }
 
-            $newTopic = Topic::create(['name'=>$topic,'questions_count'=>1]);
-
-            return $newTopic->id;
-        })->toArray();
-    }
 }

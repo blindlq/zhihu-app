@@ -7,12 +7,17 @@
                 <div class="card">
                     <div class="card-header">{{ $question->title }}
                         @foreach($question->topics as $topic)
-                            <span class="topic">{{ $topic->name }}</span>
+                            <a class="topic pull-right" href="/topic/{{ $topic->id }}">{{ $topic->name }}</a>
                             @endforeach
                     </div>
 
                     <div class="card-body">
                         {!! $question->body !!}
+                    </div>
+                    <div class="action">
+                        @if(Auth::check() && Auth::user()->owns($question))
+                            <span class="edit"><a href="{{ route('question.edit',$question->id)}}">编辑</a></span>
+                        @endif
                     </div>
                 </div>
             </div>

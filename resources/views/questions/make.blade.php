@@ -28,8 +28,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="body">描述</label>
-                                <script id="container" type="text/plain" name="body"  style="height: 250px"></script>
-                                {!! old('body') !!}
+                                <script id="container" type="text/plain" name="body"  style="height: 250px">{!! old('body') !!}</script>
+
                                 @if($errors->has('body'))
                                     <span class="invalid-feedback" style="display: block;">
                                          <strong>{{ $errors->first('body') }}</strong>

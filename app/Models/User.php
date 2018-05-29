@@ -28,6 +28,13 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+
+    public function owns($model)
+    {
+        return $this->id == $model->user_id;
+    }
+
+
     /**
      * 重写找回密码
      * @param string $token
