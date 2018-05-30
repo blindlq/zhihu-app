@@ -13,8 +13,10 @@ use App\Models\Topic;
 
 
 /**
+ * 只与model和数据库打交道，不设计service和controller
  * Class QuestionRepository
  * @package App\Repositories
+ *
  */
 class QuestionRepository
 {
@@ -36,10 +38,21 @@ class QuestionRepository
         return Question::create($attributes);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function byId($id)
     {
         return Question::find($id);
     }
+
+    public function getQuestionFeed()
+    {
+        //scope函数的使用
+        return Question::published()->latest('updated_at')->with('user')->get();
+    }
+
 
     /**
      * @param array $topics
