@@ -22,3 +22,4 @@ Route::get('email/verify/{token}','EmailController@verify')->name('email.verify'
 
 Route::resource('question','QuestionController',['only'=>['index','create','store','show','edit','update','destroy']]);
 
+Route::post('question/{question}/anwser','AnswerController@store')->name('answer.store');

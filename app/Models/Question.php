@@ -23,7 +23,7 @@ class Question extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    //问题与回答一对多
     public function answers()
     {
         return $this->hasMany(Answer::class);

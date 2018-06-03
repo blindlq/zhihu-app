@@ -24,9 +24,10 @@ class QuestionRepository
      * @param $id
      * @return mixed
      */
-    public function byIdWithTopics($id)
+    public function byIdWithTopicsAndAnswers($id)
     {
-        return Question::where('id',$id)->with('topics')->first();
+        //这个with不是数据表topic而是Models/Question下的topics方法
+        return Question::where('id',$id)->with(['topics','answers'])->first();
     }
 
     /**
